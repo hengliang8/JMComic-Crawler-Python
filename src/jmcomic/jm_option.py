@@ -61,10 +61,16 @@ class CacheRegistry:
 class DirRule:
     RULE_BASE_DIR = 'Bd'
 
-    def __init__(self, rule: str, base_dir=None):
+    def __init__(self, rule: str, base_dir=None, normalize_zh='zh-cn'):
+        """
+        :param rule: DSL rule
+        :param base_dir: base directory
+        :param normalize_zh: 'zh-cn'|'zh-tw'|'none' or None. 控制是否以及如何进行繁简体归一化，默认 'zh-cn'
+        """
         base_dir = JmcomicText.parse_to_abspath(base_dir)
         self.base_dir = base_dir
         self.rule_dsl = rule
+        self.normalize_zh = normalize_zh
         self.parser_list: List[Tuple[str, Callable]] = self.get_rule_parser_list(rule)
 
     def decide_image_save_dir(self,
@@ -89,14 +95,18 @@ class DirRule:
                 jm_log('dir_rule', f'路径规则"{rule}"的解析出错: {e}, album={album}, photo={photo}')
                 raise e
             if parser != self.parse_bd_rule:
-                # 统一将路径段转换为简体，避免繁体/简体导致的重复下载目录
+                # 根据配置 normalize_zh 进行繁简体统一或跳过
                 try:
-                    path = JmcomicText.to_zh_cn(str(path))
+                    target = getattr(self, 'normalize_zh', None)
+                    if target is None:
+                        # 默认为不转换
+                        conv_path = str(path)
+                    else:
+                        conv_path = JmcomicText.to_zh(str(path), target)
                 except Exception:
-                    # 如果转换不可用（例如缺少zhconv），退回原字符串
-                    path = str(path)
+                    conv_path = str(path)
 
-                path = fix_windir_name(path).strip()
+                path = fix_windir_name(conv_path).strip()
 
             path_ls.append(path)
 
@@ -209,6 +219,7 @@ class JmOption:
             dir_rule={
                 'rule': self.dir_rule.rule_dsl,
                 'base_dir': self.dir_rule.base_dir,
+                'normalize_zh': getattr(self.dir_rule, 'normalize_zh', None),
             },
             download=self.download.src_dict,
             client=self.client.src_dict,
@@ -334,6 +345,7 @@ class JmOption:
             'dir_rule': {
                 'rule': self.dir_rule.rule_dsl,
                 'base_dir': self.dir_rule.base_dir,
+                'normalize_zh': getattr(self.dir_rule, 'normalize_zh', None),
             },
             'download': self.download.src_dict,
             'client': self.client.src_dict,

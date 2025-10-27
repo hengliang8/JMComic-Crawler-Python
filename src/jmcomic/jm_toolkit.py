@@ -329,8 +329,34 @@ class JmcomicText:
 
     @classmethod
     def to_zh_cn(cls, s):
-        import zhconv
-        return zhconv.convert(s, 'zh-cn')
+        # 兼容旧接口，默认转换为简体
+        return cls.to_zh(s, 'zh-cn')
+
+    @classmethod
+    def to_zh(cls, s, target='zh-cn'):
+        """
+        通用的繁简体转换接口。
+
+        :param s: 待转换字符串
+        :param target: 目标编码: 'zh-cn'（简体）, 'zh-tw'（繁体），或 None/'none' 表示不转换
+        :return: 转换后的字符串（若转换失败或未安装 zhconv，返回原始字符串）
+        """
+        if s is None:
+            return s
+
+        if target is None:
+            return s
+
+        t = str(target).strip().lower()
+        if t in ('none', ''):
+            return s
+
+        try:
+            import zhconv
+            return zhconv.convert(s, t)
+        except Exception:
+            # 如果 zhconv 不可用或转换失败，则回退原字符串
+            return s
 
     @classmethod
     def try_mkdir(cls, save_dir: str):
