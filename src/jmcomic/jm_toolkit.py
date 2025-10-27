@@ -344,7 +344,7 @@ class JmcomicText:
         if s is None:
             return s
 
-        if target is None:
+        if not target:
             return s
 
         try:
