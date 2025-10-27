@@ -333,7 +333,7 @@ class JmcomicText:
         return cls.to_zh(s, 'zh-cn')
 
     @classmethod
-    def to_zh(cls, s, target='zh-cn'):
+    def to_zh(cls, s, target=None):
         """
         通用的繁简体转换接口。
 
@@ -347,15 +347,12 @@ class JmcomicText:
         if target is None:
             return s
 
-        t = str(target).strip().lower()
-        if t in ('none', ''):
-            return s
-
         try:
             import zhconv
-            return zhconv.convert(s, t)
-        except Exception:
+            return zhconv.convert(s, target)
+        except Exception as e:
             # 如果 zhconv 不可用或转换失败，则回退原字符串
+            jm_log('zhconv.error', f'error: [{e}], s: [{s}]')
             return s
 
     @classmethod
