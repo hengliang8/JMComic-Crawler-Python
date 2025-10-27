@@ -349,9 +349,23 @@ class JmcomicText:
 
         try:
             import zhconv
+<<<<<<< HEAD
             return zhconv.convert(s, target)
         except Exception as e:
-            # 如果 zhconv 不可用或转换失败，则回退原字符串
+                if target is None:
+=======
+            return zhconv.convert(s, t)
+                t = str(target).strip().lower()
+                if t in ('none', ''):
+                    return s
+
+                try:
+                    import zhconv
+                    return zhconv.convert(s, t)
+            return s
+        except Exception as e:
+            # 如果 zhconv 可用但转换失败，则记录错误并回退原字符串
+>>>>>>> ac91a56 (v2.2: 统一 normalize_zh 默认为 None，捕获 ImportError 给出友好提示)
             jm_log('zhconv.error', f'error: [{e}], s: [{s}]')
             return s
 
