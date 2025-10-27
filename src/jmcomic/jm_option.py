@@ -1,4 +1,5 @@
 from .jm_client_impl import *
+from .jm_toolkit import JmcomicText
 
 
 class CacheRegistry:
@@ -88,7 +89,14 @@ class DirRule:
                 jm_log('dir_rule', f'路径规则"{rule}"的解析出错: {e}, album={album}, photo={photo}')
                 raise e
             if parser != self.parse_bd_rule:
-                path = fix_windir_name(str(path)).strip()
+                # 统一将路径段转换为简体，避免繁体/简体导致的重复下载目录
+                try:
+                    path = JmcomicText.to_zh_cn(str(path))
+                except Exception:
+                    # 如果转换不可用（例如缺少zhconv），退回原字符串
+                    path = str(path)
+
+                path = fix_windir_name(path).strip()
 
             path_ls.append(path)
 
