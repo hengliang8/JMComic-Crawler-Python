@@ -210,7 +210,7 @@ class JmOption:
             dir_rule={
                 'rule': self.dir_rule.rule_dsl,
                 'base_dir': self.dir_rule.base_dir,
-                'normalize_zh': getattr(self.dir_rule, 'normalize_zh', None),
+                'normalize_zh': self.dir_rule.normalize_zh,
             },
             download=self.download.src_dict,
             client=self.client.src_dict,
@@ -336,7 +336,7 @@ class JmOption:
             'dir_rule': {
                 'rule': self.dir_rule.rule_dsl,
                 'base_dir': self.dir_rule.base_dir,
-                'normalize_zh': getattr(self.dir_rule, 'normalize_zh', None),
+                'normalize_zh': self.dir_rule.normalize_zh,
             },
             'download': self.download.src_dict,
             'client': self.client.src_dict,
