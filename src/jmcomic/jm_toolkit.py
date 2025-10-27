@@ -338,7 +338,7 @@ class JmcomicText:
         通用的繁简体转换接口。
 
         :param s: 待转换字符串
-        :param target: 目标编码: 'zh-cn'（简体）, 'zh-tw'（繁体），或 None/'none' 表示不转换
+        :param target: 目标编码: 'zh-cn'（简体）, 'zh-tw'（繁体），或 None 表示不转换
         :return: 转换后的字符串（若转换失败或未安装 zhconv，返回原始字符串）
         """
         if s is None:
